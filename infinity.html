@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>Infinity</title>
+<script>
+/* <![CDATA[ */
+
+function arrayCheck(){if(typeof Uint32Array=="undefined"){alert("You browser is not supported. Please try another.")}}function padZero(a){var b="0";while(a.length<8){a=b+a}return a}function Bytes2Float32(c){var b=(c&2147483648)?-1:1;var d=((c>>23)&255)-127;var a=(c&~(-1<<23));if(d==128){return b*((a)?Number.NaN:Number.POSITIVE_INFINITY)}if(d==-127){if(a==0){return b*0}d=-126;a/=(1<<22)}else{a=(a|(1<<23))/(1<<23)}return b*a*Math.pow(2,d)}function Bytes2Float32_a(c){var e=new Uint32Array([c]);var b=e.buffer;var a=new Float32Array(b);var d=a[0];return d}function floattobits(c){var e=new Float32Array([c]);var b=e.buffer;var a=new Uint32Array(b);var d=a[0];return d.toString(2)}function floattobits_n(c){var b=new Float32Array([c]);var e=b.buffer;var d="";for(i=3;i>=0;i--){d=d+padZero(e[i].toString(2))}return d}function next(h,e){if(window.location.hash==""){var f=floattobits(0);window.location.hash=f;document.getElementById(h).value="Start";return false}var g=window.location.hash;g=g.replace(/[^01]/g,"");var j=parseInt(g,2);var b=Bytes2Float32(j);if(b==Infinity){var k="00000"+(j/17+2808133);k=k.substr(k.length-10);k="50^"+k.substr(0,2)+"."+k.substr(2,3)+" 14^"+k.substr(5,2)+"."+k.substr(7,3);document.getElementById(h).value=k;return false}if(e){var d=b+1;if(d==b){var a=j+1;d=Bytes2Float32(a)}}else{d=b}var l=floattobits(d);window.location.hash=l;if(d==0){d="Start"}document.getElementById(h).value=d;return false}function nextFloat(){if(window.location.hash==""){var c=floattobits(1);window.location.hash=c}var b=document.getElementById("res").value;b=b.replace(/[^01]/g,"");var d=parseInt(b,2);var f=Bytes2Float32(d);if(f==Number.POSITIVE_INFINITY){document.getElementById("res").value=a}var e=f+1;if(e==f){var g=d+1;e=Bytes2Float32(g)}var a=floattobits(e);document.getElementById("res").value=a;document.getElementById("float").value=e;return false}function convertToFloat(){var a=document.getElementById("res").value;a=a.replace(/[^01]/g,"");var b=parseInt(a,2);document.getElementById("int").value=b;var c=Bytes2Float32(b);document.getElementById("float").value=c;return false}function convertToBits(){var b=document.getElementById("float").value;var a=floattobits(parseFloat(b));document.getElementById("res").value=a;return false}function testF(){var b,a,e;var d=new Float32Array([Number.POSITIVE_INFINITY]);b=d.buffer;a=new Uint32Array(b);var c=Array.prototype.join.call(a,",");alert(c)};
+
+/*]]>*/
+</script>
+</head>
+<body onload="arrayCheck();next('btnCounter', false);">
+<!--
+<form>
+Int:
+<input id="int" type="text"  size="100"/>
+<br />
+Float:
+<input id="float" type="text"  size="100"/>
+<br />
+Result:
+<input id="res" type="text"  size="100"/>
+<br />
+<input type="button" value="toBinary" onclick="convertToBits();"/>
+<br />
+<input type="button" value="toFloat" onclick="convertToFloat();"/>
+
+<br />
+<input type="button" value="Start" onclick="nextFloat();"/>
+
+<br />
+<input type="button" value="test" onclick="testF();"/>
+
+</form>
+-->
+Can you count to infinity?
+Chuck Norris did it. Twice.
+<form>
+final:
+<input type="button" id="btnCounter" value="Start" onclick="next('btnCounter', true);" style="width:15em"/>
+</form>
+
+<!--
+
+<p>
+<ul>
+<li>http://stackoverflow.com/a/8545403/106786
+<li>http://stackoverflow.com/questions/4414077/read-write-bytes-of-float-in-js/8545403#8545403
+<li>https://gist.github.com/kg/2192799
+</ul>
+</p>
+-->
+</body>
+</html>

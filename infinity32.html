@@ -88,15 +88,11 @@ function next(buttonId, inc) {
  var intVal = parseInt(rawBin, 2); 
  var flVal = Bytes2Float32(intVal);
  if (flVal == 1e320) {
-   // 2139095040
-   // 0128637253 <=> 50.01.286 14.37.253
-   // compute as flVal/17 + 2808133
-   //
    var c = '00000' + (intVal/17 + 2808133);
    c = c.substr(c.length-10);
-   var coords = '50^' + c.substr(0,2) + '.' + c.substr(2,3) 
+   c = '50^' + c.substr(0,2) + '.' + c.substr(2,3) 
                  + ' 14^' + c.substr(5,2) + '.' + c.substr(7,3);
-   document.getElementById(buttonId).value = coords;
+   document.getElementById(buttonId).value = c;
    return false;
  }
  if (inc) {
