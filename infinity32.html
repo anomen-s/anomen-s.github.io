@@ -1,0 +1,235 @@
+<html>
+<head>
+<title>Infinity</title>
+<script>
+/* <![CDATA[ */
+
+function arrayCheck() {
+if (typeof Uint32Array == "undefined") {
+  alert('You browser is not supported. Please try another.');
+ }
+}
+
+function padZero(s){
+    var c= '0';
+    while(s.length < 8) s= c+ s;
+    return s;
+
+}
+
+
+function Bytes2Float32(bytes) {
+    var sign = (bytes & 0x80000000) ? -1 : 1;
+    var exponent = ((bytes >> 23) & 0xFF) - 127;
+    var significand = (bytes & ~(-1 << 23));
+
+    if (exponent == 128) 
+        return sign * ((significand) ? Number.NaN : Number.POSITIVE_INFINITY);
+
+    if (exponent == -127) {
+        if (significand == 0) return sign * 0.0;
+        exponent = -126;
+        significand /= (1 << 22);
+    } else significand = (significand | (1 << 23)) / (1 << 23);
+
+    return sign * significand * Math.pow(2, exponent);
+}
+
+
+
+
+function Bytes2Float32_a(intVal) {
+    var arrayf = new Uint32Array([intVal]);
+    var buf = arrayf.buffer;
+    var view = new Float32Array( buf );
+    var flVal = view[0];
+    return flVal;
+}
+
+function floattobits(num) {
+    var arrayf = new Float32Array([num]);
+    var buf = arrayf.buffer;
+    var view = new Uint32Array( buf );
+    var intVal = view[0];
+    //alert(intVal);
+    return intVal.toString(2);
+}
+
+function floattobits_n(num) {
+        // Create 1 entry long Float32 array
+        var a = new Float32Array([num]);
+        //a.forEach(function(x) { alert(x)});
+        //alert('A: ' + JSON.stringify(a))
+        var fa = a.buffer;
+        //alert('FA:' + JSON.stringify(fa))
+        //alert('FTB ' +fa.byteLength);
+        
+        //alert('a: ' + b[0] + ' ' + b[1]  + ' '+ b[2]  + ' '+ b[3]  + ' '+ b[4]  + ' '+ b[5]  + ' '+ b[6] + ' ' + b[7]);
+        var res = '';
+        for (i = 3; i >= 0 ; i--) {
+          res = res + padZero(fa[i].toString(2));
+        }
+        return res;
+}
+
+
+function next(buttonId, inc) {
+//alert('next');
+ if (window.location.hash == '') {
+    var one = floattobits(0.0);
+    window.location.hash = one;
+    document.getElementById(buttonId).value = 'Start';
+    return false;
+ }
+ 
+ var rawBin = window.location.hash;
+ rawBin = rawBin.replace(/[^01]/g, '');
+ 
+ var intVal = parseInt(rawBin, 2); 
+ var flVal = Bytes2Float32(intVal);
+ if (flVal == 1e320) {
+   // 2139095040
+   // 0128637253 <=> 50.01.286 14.37.253
+   // compute as flVal/17 + 2808133
+   //
+   var c = '00000' + (intVal/17 + 2808133);
+   c = c.substr(c.length-10);
+   var coords = '50^' + c.substr(0,2) + '.' + c.substr(2,3) 
+                 + ' 14^' + c.substr(5,2) + '.' + c.substr(7,3);
+   document.getElementById(buttonId).value = coords;
+   return false;
+ }
+ if (inc) {
+  var nextFloat = flVal + 1.0;
+  //alert('N: ' + nextFloat);
+ 
+  if (nextFloat == flVal) {
+    var nextIntVal = intVal + 1;
+    nextFloat = Bytes2Float32(nextIntVal);
+  }
+ } 
+ else {
+   nextFloat = flVal;
+ }
+ var nextBits = floattobits(nextFloat);
+ window.location.hash =  nextBits;
+ if (nextFloat == 0.0) {
+   nextFloat = 'Start';
+ }
+ document.getElementById(buttonId).value = nextFloat;
+ return false;
+}
+
+function nextFloat() {
+  if (window.location.hash == '') {
+    var one = floattobits(1.0);
+    window.location.hash = one;
+  }
+ //alert('n');
+ var rawBin = document.getElementById('res').value;
+ rawBin = rawBin.replace(/[^01]/g, '');
+ 
+ var intVal = parseInt(rawBin, 2); 
+ var flVal = Bytes2Float32(intVal);
+ if (flVal == Number.POSITIVE_INFINITY) {
+   // 2139095040
+   // 0128637253 <=> 50.01.286 14.37.253
+   // compute as flVal/17 + 2808133
+   //
+   document.getElementById('res').value =  nextBits;
+ }
+ 
+ var nextFloat = flVal + 1.0;
+  //alert('N: ' + nextFloat);
+ 
+ if (nextFloat == flVal) {
+   var nextIntVal = intVal + 1;
+   nextFloat = Bytes2Float32(nextIntVal);
+ }
+ var nextBits = floattobits(nextFloat);
+ document.getElementById('res').value =  nextBits;
+ document.getElementById('float').value =  nextFloat;
+ 
+ return false;
+}
+
+function convertToFloat() {
+ //alert('b');
+ var rawBin = document.getElementById('res').value;
+ rawBin = rawBin.replace(/[^01]/g, '');
+ 
+ var intVal = parseInt(rawBin, 2); 
+ document.getElementById('int').value =  intVal;
+ var flVal = Bytes2Float32(intVal);
+ document.getElementById('float').value =  flVal;
+ return false;
+}
+
+function convertToBits () {
+ // alert('b');
+ var f = document.getElementById('float').value;
+ var res = floattobits(parseFloat(f));
+ document.getElementById('res').value =  res;
+ return false;
+}
+
+
+function testF() {
+    var buf, view, str;
+    var arrayf = new Float32Array([Number.POSITIVE_INFINITY]);
+    //buf = new ArrayBuffer( 5 );
+    buf = arrayf.buffer;
+    view = new Uint32Array( buf );
+    //view[ 0 ] = 7; // Some dummy values
+    //view[ 1 ] = 4;
+    var res =  Array.prototype.join.call(view, ",");
+    alert(res);
+
+}
+
+/*]]>*/
+</script>
+</head>
+<body onload="arrayCheck();next('btnCounter', false);">
+<!--
+<form>
+Int:
+<input id="int" type="text"  size="100"/>
+<br />
+Float:
+<input id="float" type="text"  size="100"/>
+<br />
+Result:
+<input id="res" type="text"  size="100"/>
+<br />
+<input type="button" value="toBinary" onclick="convertToBits();"/>
+<br />
+<input type="button" value="toFloat" onclick="convertToFloat();"/>
+
+<br />
+<input type="button" value="Start" onclick="nextFloat();"/>
+
+<br />
+<input type="button" value="test" onclick="testF();"/>
+
+</form>
+-->
+Can you count to infinity?
+Chuck Norris did it. Twice.
+<form>
+final:
+<input type="button" id="btnCounter" value="Start" onclick="next('btnCounter', true);" style="width:15em"/>
+</form>
+
+<!--
+
+<p>
+<ul>
+<li>http://stackoverflow.com/a/8545403/106786
+<li>http://stackoverflow.com/questions/4414077/read-write-bytes-of-float-in-js/8545403#8545403
+<li>https://gist.github.com/kg/2192799
+</ul>
+</p>
+-->
+</body>
+</html>
