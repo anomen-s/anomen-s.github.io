@@ -2,7 +2,7 @@
 layout: post
 title:  "How to send HTTP requests with unsupported methods in Tomee JAX-RS"
 date:   2018-01-07 13:51:38 +0100
-categories: java jaxrs tomee cxf
+categories: java
 ---
 
 When working with REST services you can easily come across a service which utilizes other method than those specified in [HTTP/1.1 RFC][rfc2616].
@@ -38,6 +38,7 @@ This code is delivered as maven module:
 </dependency>
 {% endhighlight %}
 
+Note: the property can also be set globally using `System.setProperty()` method or with command line parameter `-Duse.httpurlconnection.method.reflection=true`.
 
 [source]: https://github.com/apache/cxf/blob/master/rt/transports/http/src/main/java/org/apache/cxf/transport/http/URLConnectionHTTPConduit.java
 [bug]: https://bugs.openjdk.java.net/browse/JDK-7016595
